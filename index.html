@@ -4,6 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NewAgeIT Hub AI News</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+    background:#f5f5f5;
+}
+
+h1{
+    text-align:center;
+}
+
+.news-card{
+    background:#fff;
+    border:1px solid #ddd;
+    padding:20px;
+    margin:15px 0;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+
+.news-card h2{
+    margin-top:0;
+}
+
+.news-card a{
+    display:inline-block;
+    margin-top:10px;
+    padding:8px 15px;
+    background:#0073e6;
+    color:white;
+    text-decoration:none;
+    border-radius:5px;
+}
+
+.news-card a:hover{
+    background:#005bb5;
+}
+</style>
+
 </head>
 
 <body>
@@ -16,28 +58,31 @@ Loading latest news...
 
 <script>
 
-const rss =
-"https://newageithub.com/rss";
+const rss = "https://newageithub.com/rss";
 
 fetch(
 "https://api.rss2json.com/v1/api.json?rss_url=" +
 encodeURIComponent(rss)
 )
-.then(res=>res.json())
-.then(data=>{
+.then(res => res.json())
+.then(data => {
 
-let html="";
+let html = "";
 
-data.items.forEach(item=>{
+// Top 50 news show karega
+data.items.slice(0,50).forEach(item => {
 
 html += `
-<div style="border:1px solid #ddd;padding:15px;margin:15px;">
+<div class="news-card">
 
 <h2>${item.title}</h2>
 
 <p>
-${item.description.substring(0,200)}...
+${item.description.replace(/<[^>]*>/g,'').substring(0,300)}...
 </p>
+
+<small>${item.pubDate}</small>
+<br><br>
 
 <a href="${item.link}" target="_blank">
 Read Full Article
@@ -49,6 +94,14 @@ Read Full Article
 });
 
 document.getElementById("news").innerHTML = html;
+
+})
+.catch(error => {
+
+document.getElementById("news").innerHTML =
+"<h2>Unable to load news.</h2>";
+
+console.error(error);
 
 });
 
