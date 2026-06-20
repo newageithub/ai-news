@@ -1,96 +1,230 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NewAgeIT Hub AI News</title>
+<title>AI WIRE — NewAgeIT Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-body{
-    font-family: Arial, sans-serif;
-    max-width:1200px;
-    margin:auto;
-    padding:20px;
-    background:#f5f5f5;
-}
-h1{
-    text-align:center;
-}
-.news-card{
-    background:#fff;
-    border:1px solid #ddd;
-    padding:20px;
-    margin:15px 0;
-    border-radius:10px;
-    box-shadow:0 2px 5px rgba(0,0,0,.1);
-}
-.news-card h2{
-    margin-top:0;
-}
-.news-card a{
-    display:inline-block;
-    margin-top:10px;
-    padding:8px 15px;
-    background:#0073e6;
-    color:white;
-    text-decoration:none;
-    border-radius:5px;
-}
-.news-card a:hover{
-    background:#005bb5;
-}
+  :root{
+    --ink:#0A0E1A;
+    --panel:#121826;
+    --panel-hover:#161D2E;
+    --line:#232C3F;
+    --signal:#FF8A3D;
+    --cyan:#5EEAD4;
+    --text:#E8ECF4;
+    --muted:#94A0B5;
+  }
+  *{ box-sizing:border-box; }
+  html{ overflow-x:hidden; }
+  body{
+    margin:0;
+    background:var(--ink);
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0);
+    background-size: 28px 28px;
+    color:var(--text);
+    font-family:'Source Serif 4', serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  /* header */
+  header{ margin-bottom: 52px; }
+  .eyebrow{
+    display:flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--cyan);
+    margin-bottom:18px;
+  }
+  .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--cyan);
+    animation: pulse 2.2s infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow:0 0 0 0 rgba(94,234,212,0.45); }
+    70%{ box-shadow:0 0 0 8px rgba(94,234,212,0); }
+    100%{ box-shadow:0 0 0 0 rgba(94,234,212,0); }
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size: clamp(34px, 7vw, 56px);
+    line-height:1.02;
+    margin:0 0 12px;
+    letter-spacing:-0.01em;
+  }
+  h1 span{ color:var(--signal); }
+  .sub{
+    color:var(--muted);
+    font-size:16px;
+    max-width:46ch;
+    line-height:1.55;
+    margin:0;
+  }
+  .scanline{ margin-top:30px; height:34px; overflow:hidden; }
+  .scanline svg{ width:100%; height:100%; display:block; }
+  .scanline path{
+    fill:none; stroke:var(--signal); stroke-width:1.5;
+    stroke-dasharray: 6 5000;
+    animation: travel 5s linear infinite;
+    opacity:0.85;
+  }
+  @keyframes travel{ to{ stroke-dashoffset:-5000; } }
+
+  /* cards */
+  #news{ display:flex; flex-direction:column; gap:20px; }
+
+  .news-card{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:26px 28px 24px;
+    transition: border-color .25s ease, background .25s ease, transform .25s ease;
+  }
+  .news-card:hover{
+    border-color:var(--signal);
+    background:var(--panel-hover);
+    transform:translateY(-2px);
+  }
+  .news-card::before, .news-card::after{
+    content:""; position:absolute; width:14px; height:14px;
+    border:1.5px solid var(--signal); opacity:0;
+    transition:opacity .25s ease;
+  }
+  .news-card::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+  .news-card::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+  .news-card:hover::before, .news-card:hover::after{ opacity:1; }
+
+  .meta-row{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; color:var(--muted); letter-spacing:0.03em;
+    margin-bottom:14px;
+  }
+  .meta-row .id{ color:var(--signal); }
+  .meta-row .sep{ color:var(--line); }
+
+  .news-card h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:500; font-size:22px; line-height:1.28;
+    margin:0 0 12px; color:var(--text);
+    overflow-wrap:break-word;
+  }
+  .news-card p{
+    font-size:16px; line-height:1.6; color:#B9C0CE; margin:0 0 18px;
+  }
+  .news-card a{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--signal); text-decoration:none;
+    border-bottom:1px solid transparent; padding:6px 0;
+    transition: border-color .2s ease, gap .2s ease;
+  }
+  .news-card a:hover{ border-color:var(--signal); gap:10px; }
+  .news-card a::after{ content:"→"; }
+  .news-card a:focus-visible{ outline:2px solid var(--signal); outline-offset:3px; }
+
+  .status{
+    text-align:center; color:var(--muted);
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px; padding:60px 0;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .dot, .scanline path{ animation:none; }
+  }
+
+  /* tablet */
+  @media (max-width:768px){
+    .wrap{ padding:40px 20px 80px; }
+    header{ margin-bottom:44px; }
+    .sub{ max-width:100%; }
+  }
+
+  /* phone */
+  @media (max-width:480px){
+    .wrap{ padding:28px 14px 56px; }
+    header{ margin-bottom:36px; }
+    h1{ font-size: clamp(28px, 11vw, 40px); letter-spacing:-0.005em; }
+    .sub{ font-size:14.5px; }
+    .scanline{ margin-top:22px; height:26px; }
+    #news{ gap:14px; }
+    .news-card{ padding:20px 16px; }
+    .news-card h2{ font-size:19px; }
+    .news-card p{ font-size:15px; }
+    .meta-row{ font-size:11px; gap:10px; margin-bottom:10px; }
+    .eyebrow{ font-size:11px; }
+  }
+
+  @media (max-width:340px){
+    h1{ letter-spacing:-0.02em; }
+    .meta-row{ gap:8px; }
+  }
 </style>
 </head>
 <body>
-<h1>Latest AI News</h1>
-<div id="news">
-Loading latest news...
-</div>
-<script>
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><span class="dot"></span> Live feed · scanning</div>
+    <h1>AI<span>WIRE</span></h1>
+    <p class="sub">Dispatches from NewAgeIT Hub, ordered as they arrive — no ranking, no algorithm, just the feed.</p>
+    <div class="scanline" aria-hidden="true">
+      <svg viewBox="0 0 600 34" preserveAspectRatio="none">
+        <path d="M0,17 L60,17 L70,4 L80,30 L90,17 L140,17 L150,8 L160,26 L170,17 L600,17" />
+      </svg>
+    </div>
+  </header>
 
+  <div id="news">
+    <div class="status">Tuning in to the signal…</div>
+  </div>
+</div>
+
+<script>
 fetch("https://newageithub.com/rss")
 .then(response => response.text())
 .then(str => new DOMParser().parseFromString(str, "text/xml"))
 .then(data => {
+  const items = Array.from(data.querySelectorAll("item")).slice(0, 100);
+  if (items.length === 0) { throw new Error("No items in feed"); }
 
-const items = data.querySelectorAll("item");
+  let html = "";
+  items.forEach((item, i) => {
+    const title = item.querySelector("title")?.textContent || "";
+    const link = item.querySelector("link")?.textContent || "";
+    const desc = (item.querySelector("description")?.textContent || "").replace(/<[^>]*>/g, "");
+    const pubDate = item.querySelector("pubDate")?.textContent || "";
+    const num = String(i + 1).padStart(3, "0");
 
-let html = "";
-
-// Latest 100 news
-Array.from(items).slice(0,100).forEach(item => {
-
-const title = item.querySelector("title")?.textContent || "";
-const link = item.querySelector("link")?.textContent || "";
-const desc = item.querySelector("description")?.textContent || "";
-const pubDate = item.querySelector("pubDate")?.textContent || "";
-
-html += `
-<div class="news-card">
-    <h2>${title}</h2>
-
-    <p>${desc.substring(0,250)}...</p>
-
-    <small>${pubDate}</small>
-    <br><br>
-
-    <a href="${link}" target="_blank">
-        Read Full Article
-    </a>
-</div>
-`;
-
-});
-
-document.getElementById("news").innerHTML = html;
-
+    html += `
+<article class="news-card">
+  <div class="meta-row">
+    <span class="id">SIGNAL-${num}</span>
+    <span class="sep">·</span>
+    <span>${pubDate}</span>
+  </div>
+  <h2>${title}</h2>
+  <p>${desc.substring(0, 250)}...</p>
+  <a href="${link}" target="_blank" rel="noopener">Read full dispatch</a>
+</article>`;
+  });
+  document.getElementById("news").innerHTML = html;
 })
 .catch(error => {
-
-document.getElementById("news").innerHTML =
-"<h2>Unable to load RSS feed.</h2>";
-
-console.error(error);
-
+  document.getElementById("news").innerHTML =
+  "<div class='status'>Signal lost — unable to load the feed right now.</div>";
+  console.error(error);
 });
-
 </script>
+</body>
+</html>
