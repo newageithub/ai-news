@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NewAgeIT Hub AI News</title>
-
 <style>
 body{
     font-family: Arial, sans-serif;
@@ -13,11 +12,9 @@ body{
     padding:20px;
     background:#f5f5f5;
 }
-
 h1{
     text-align:center;
 }
-
 .news-card{
     background:#fff;
     border:1px solid #ddd;
@@ -26,11 +23,9 @@ h1{
     border-radius:10px;
     box-shadow:0 2px 5px rgba(0,0,0,.1);
 }
-
 .news-card h2{
     margin-top:0;
 }
-
 .news-card a{
     display:inline-block;
     margin-top:10px;
@@ -40,73 +35,67 @@ h1{
     text-decoration:none;
     border-radius:5px;
 }
-
 .news-card a:hover{
     background:#005bb5;
 }
 </style>
-
 </head>
-
 <body>
-
 <h1>Latest AI News</h1>
-
 <div id="news">
 Loading latest news...
 </div>
-
 <script>
-
 const rss = "https://newageithub.com/rss";
 
-fetch(
-"https://api.rss2json.com/v1/api.json?rss_url=" +
-encodeURIComponent(rss) +
-"&count=50"
-)
-.then(res => res.json())
-.then(data => {
+// Kitni news dikhani hain — yahan se control karein
+const MAX_ITEMS = 50;
 
-let html = "";
+// rss2json (free, no key) ka response sirf 10 items tak limited hota hai.
+// Isliye hum seedhe RSS XML ko CORS proxy se fetch karke parse karenge,
+// taaki feed mein jitni bhi news ho, sab mil sake.
+const corsProxy = "https://api.allorigins.win/raw?url=";
 
-// Top 50 news show karega
-data.items.slice(0,50).forEach(item => {
+fetch(corsProxy + encodeURIComponent(rss))
+.then(res => res.text())
+.then(xmlText => {
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(xmlText, "text/xml");
+    const items = Array.from(xml.querySelectorAll("item"));
 
-html += `
+    if (items.length === 0) {
+        throw new Error("No items found in feed");
+    }
+
+    let html = "";
+    items.slice(0, MAX_ITEMS).forEach(item => {
+        const title = item.querySelector("title")?.textContent || "";
+        const link = item.querySelector("link")?.textContent || "";
+        const pubDate = item.querySelector("pubDate")?.textContent || "";
+        let description = item.querySelector("description")?.textContent || "";
+
+        // HTML tags hata kar plain text banao
+        description = description.replace(/<[^>]*>/g, "").substring(0, 300);
+
+        html += `
 <div class="news-card">
-
-<h2>${item.title}</h2>
-
-<p>
-${item.description.replace(/<[^>]*>/g,'').substring(0,300)}...
-</p>
-
-<small>${item.pubDate}</small>
+<h2>${title}</h2>
+<p>${description}...</p>
+<small>${pubDate}</small>
 <br><br>
-
-<a href="${item.link}" target="_blank">
+<a href="${link}" target="_blank">
 Read Full Article
 </a>
-
 </div>
 `;
-
-});
-
-document.getElementById("news").innerHTML = html;
-
+    });
+    document.getElementById("news").innerHTML = html;
 })
 .catch(error => {
-
-document.getElementById("news").innerHTML =
-"<h2>Unable to load news.</h2>";
-
-console.error(error);
-
+    document.getElementById("news").innerHTML =
+    "<h2>Unable to load news.</h2>";
+    console.error(error);
 });
-
 </script>
-
 </body>
 </html>
