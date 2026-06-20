@@ -62,7 +62,8 @@ const rss = "https://newageithub.com/rss";
 
 fetch(
 "https://api.rss2json.com/v1/api.json?rss_url=" +
-encodeURIComponent(rss)
+encodeURIComponent(rss) +
+"&count=50"
 )
 .then(res => res.json())
 .then(data => {
