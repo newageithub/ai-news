@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NewAgeIT Hub AI News</title>
+</head>
+
+<body>
+
+<h1>Latest AI News</h1>
+
+<div id="news">
+Loading latest news...
+</div>
+
+<script>
+
+const rss =
+"https://newageithub.com/rss";
+
+fetch(
+"https://api.rss2json.com/v1/api.json?rss_url=" +
+encodeURIComponent(rss)
+)
+.then(res=>res.json())
+.then(data=>{
+
+let html="";
+
+data.items.forEach(item=>{
+
+html += `
+<div style="border:1px solid #ddd;padding:15px;margin:15px;">
+
+<h2>${item.title}</h2>
+
+<p>
+${item.description.substring(0,200)}...
+</p>
+
+<a href="${item.link}" target="_blank">
+Read Full Article
+</a>
+
+</div>
+`;
+
+});
+
+document.getElementById("news").innerHTML = html;
+
+});
+
+</script>
+
+</body>
+</html>
