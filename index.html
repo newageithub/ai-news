@@ -46,56 +46,51 @@ h1{
 Loading latest news...
 </div>
 <script>
-const rss = "https://newageithub.com/rss";
 
-// Kitni news dikhani hain — yahan se control karein
-const MAX_ITEMS = 50;
+fetch("https://newageithub.com/rss")
+.then(response => response.text())
+.then(str => new DOMParser().parseFromString(str, "text/xml"))
+.then(data => {
 
-// rss2json (free, no key) ka response sirf 10 items tak limited hota hai.
-// Isliye hum seedhe RSS XML ko CORS proxy se fetch karke parse karenge,
-// taaki feed mein jitni bhi news ho, sab mil sake.
-const corsProxy = "https://api.allorigins.win/raw?url=";
+const items = data.querySelectorAll("item");
 
-fetch(corsProxy + encodeURIComponent(rss))
-.then(res => res.text())
-.then(xmlText => {
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(xmlText, "text/xml");
-    const items = Array.from(xml.querySelectorAll("item"));
+let html = "";
 
-    if (items.length === 0) {
-        throw new Error("No items found in feed");
-    }
+// Latest 100 news
+Array.from(items).slice(0,100).forEach(item => {
 
-    let html = "";
-    items.slice(0, MAX_ITEMS).forEach(item => {
-        const title = item.querySelector("title")?.textContent || "";
-        const link = item.querySelector("link")?.textContent || "";
-        const pubDate = item.querySelector("pubDate")?.textContent || "";
-        let description = item.querySelector("description")?.textContent || "";
+const title = item.querySelector("title")?.textContent || "";
+const link = item.querySelector("link")?.textContent || "";
+const desc = item.querySelector("description")?.textContent || "";
+const pubDate = item.querySelector("pubDate")?.textContent || "";
 
-        // HTML tags hata kar plain text banao
-        description = description.replace(/<[^>]*>/g, "").substring(0, 300);
-
-        html += `
+html += `
 <div class="news-card">
-<h2>${title}</h2>
-<p>${description}...</p>
-<small>${pubDate}</small>
-<br><br>
-<a href="${link}" target="_blank">
-Read Full Article
-</a>
+    <h2>${title}</h2>
+
+    <p>${desc.substring(0,250)}...</p>
+
+    <small>${pubDate}</small>
+    <br><br>
+
+    <a href="${link}" target="_blank">
+        Read Full Article
+    </a>
 </div>
 `;
-    });
-    document.getElementById("news").innerHTML = html;
+
+});
+
+document.getElementById("news").innerHTML = html;
+
 })
 .catch(error => {
-    document.getElementById("news").innerHTML =
-    "<h2>Unable to load news.</h2>";
-    console.error(error);
+
+document.getElementById("news").innerHTML =
+"<h2>Unable to load RSS feed.</h2>";
+
+console.error(error);
+
 });
+
 </script>
-</body>
-</html>
